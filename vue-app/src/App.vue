@@ -1,7 +1,6 @@
 <template>
-    <div id="app" class="container">
+    <div id="app" class="container pt-5">
         <h2>Ваше расписание</h2>
-
         <p>
         <span><label><select @change="chooseForm">
           <option
@@ -28,19 +27,89 @@
             </thead>
             <tbody>
             <tr v-for="(item, index) in times">
-                <th scope="row">{{ item.text }}</th>
+                <th scope="row">{{ item }}</th>
                 <td v-for="b in blocks">
                     <p v-for="(value) in b.day">
                         <span v-if="value.num === index">
-                            {{ value.les }}<br>
-                            каб. {{ value.cab }}<br>
-                            {{ value.prof}}<br>
+                            <strong>{{ value.les }}</strong><br>
+                            <em style="color: lightslategrey">каб. {{ value.cab }}</em><br>
+                            <u  style="color: lightslategrey">{{ value.prof}}</u><br>
                         </span>
                     </p>
                 </td>
             </tr>
             </tbody>
         </table>
+        <ul v-if="date === 'week_list' & type === 'a'" class="schedule">
+
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center color-red">
+                    <router-link
+                        tag="li"
+                        class="page-item"
+                        :to="{name: '', query: {week_day: cols[counter + 1].text, block: blocks[counter].day}}">
+                        <a class="page-link">Пн</a>
+                    </router-link>
+                    <router-link
+                        tag="li"
+                        class="page-item"
+                        :to="{name: '', query: {week_day: cols[counter + 2].text, block: blocks[counter + 1].day}}">
+                        <a class="page-link">Вт</a>
+                    </router-link>
+                    <router-link
+                        tag="li"
+                        class="page-item"
+                        :to="{name: '', query: {week_day: cols[counter + 3].text, block: blocks[counter + 2].day}}">
+                        <a class="page-link">Ср</a>
+                    </router-link>
+                    <router-link
+                        tag="li"
+                        class="page-item"
+                        :to="{name: '', query: {week_day: cols[counter + 4].text, block: blocks[counter + 3].day}}">
+                        <a class="page-link">Чт</a>
+                    </router-link>
+                    <router-link
+                        tag="li"
+                        class="page-item"
+                        :to="{name: '', query: {week_day: cols[counter + 5].text, block: blocks[counter + 4].day}}">
+                        <a class="page-link">Пт</a>
+                    </router-link>
+                    <router-link
+                        tag="li"
+                        class="page-item"
+                        :to="{name: '', query: {week_day: cols[counter + 6].text, block: blocks[counter + 5].day}}">
+                        <a class="page-link">Сб</a>
+                    </router-link>
+                    <router-link
+                        tag="li"
+                        class="page-item"
+                        :to="{name: '', query: {week_day: cols[counter + 7].text, block: blocks[counter + 6].day}}">
+                        <a class="page-link">Вс</a>
+                    </router-link>
+                </ul>
+            </nav>
+
+            <h5 class="container text-center pb-4 pt-4"> {{ $route.query.week_day }}</h5>
+
+            <li v-for="value in  $route.query.block" >
+                    <div v-for="(item, index) in times" class="schedule_day">
+                        <span v-if="value.num === index">
+                            <em style="color: darkblue">{{ item }}</em>
+                            <div class="container text-center">
+                                <strong>{{ value.les }}</strong><br>
+                                <em
+                                    style="color: lightslategrey;
+                                    padding-right: 15px"
+                                >
+                                    каб. {{ value.cab }}
+                                </em><br>
+                                <u  style="color: lightslategrey">{{ value.prof}}</u><br>
+                                <hr>
+                            </div>
+                        </span>
+                    </div>
+            </li>
+        </ul>
         <p v-if="type === 'b'">Здесь скоро будет твое персонализированное расписание!</p>
         <p v-if="type === 'c'">Здесь скоро будет твое расписание занятости по педагогам!</p>
         <p v-if="type === 'd'">Здесь скоро будет твое расписание занятости по кабинетам!</p>
@@ -51,6 +120,7 @@
 export default {
   data () {
     return {
+      counter: 0,
       type: 'a',
       date: 'week_grid',
       defaultOption: 'общее',
@@ -68,18 +138,18 @@ export default {
         'список на неделю'
       ],
       times: [
-        { text: '10:00-10:45' },
-        { text: '10:55-11:40' },
-        { text: '11:50-12:35' },
-        { text: '12:45-13:30' },
-        { text: '13:40-14:25' },
-        { text: '14:35-15:20' },
-        { text: '15:30-16:15' },
-        { text: '16:25-17:10' },
-        { text: '17:20-18:05' },
-        { text: '18:15-19:00' },
-        { text: '19:10-19:55' },
-        { text: '20:05-20:50' }
+        '10:00-10:45',
+        '10:55-11:40',
+        '11:50-12:35',
+        '12:45-13:30',
+        '13:40-14:25',
+        '14:35-15:20',
+        '15:30-16:15',
+        '16:25-17:10',
+        '17:20-18:05',
+        '18:15-19:00',
+        '19:10-19:55',
+        '20:05-20:50'
       ],
       cols: [
         { text: 'время' },
@@ -101,18 +171,18 @@ export default {
               num: 8
             },
             {
-              les: '\tИнженер PRO (образ.пакет): инженерное 3d моделирование и прототипирование',
-              cab: 319,
-              prof: 'Рытов А. М.',
-              num: 9
-            },
-            {
               les: 'Инженер PRO (образ.пакет): программирование микроконтроллеров',
               cab: 325,
               prof: 'Королева Т. Н.',
               num: 8
             },
             {
+              les: '\tИнженер PRO (образ.пакет): инженерное 3d моделирование и прототипирование',
+              cab: 319,
+              prof: 'Рытов А. М.',
+              num: 9
+            },
+            {
               les: 'Инженер PRO (образ.пакет): программирование микроконтроллеров',
               cab: 325,
               prof: 'Королева Т. Н.',
@@ -122,6 +192,12 @@ export default {
               les: '\tИнженер PRO (образ.пакет): инженерное 3d моделирование и прототипирование',
               cab: 319,
               prof: 'Рытов А. М.',
+              num: 10
+            },
+            {
+              les: 'Киберэлектроника',
+              cab: 325,
+              prof: 'Черкасов Т. М.',
               num: 10
             },
             {
@@ -129,12 +205,6 @@ export default {
               cab: 319,
               prof: 'Рытов А. М.',
               num: 11
-            },
-            {
-              les: 'Киберэлектроника',
-              cab: 325,
-              prof: 'Черкасов Т. М.',
-              num: 10
             },
             {
               les: 'Киберэлектроника',
@@ -645,6 +715,11 @@ export default {
     }
 
     p {
+        color: black;
+        margin-top: 15px;
+        margin-bottom: 15px;
+    }
+    .schedule_day {
         color: black;
     }
 </style>
