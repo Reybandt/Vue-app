@@ -21,7 +21,7 @@ class GroupType extends ObjectType
                 // Не забывайте писать документацию методов и полей GraphQL, иначе они не будут зарегистрированы.
                 return [
                     'id' => Types::id(),
-                    'idassociation' => ['type' => Types::string()],
+                    'idassociation' => Types::id(),
                     'teacher' => ['type' => Types::string()],
                     'study_days' => ['type' => Types::string()],
                     'study_times' => ['type' => Types::string()]
