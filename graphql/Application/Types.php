@@ -1,15 +1,21 @@
 <?php
+
 namespace GraphQL\Application;
 
 use GraphQL\Application\Type\AssociationType;
 use GraphQL\Application\Type\UserType;
 use GraphQL\Application\Type\NodeType;
-use GraphQL\Application\Type\QueryType;
 use GraphQL\Application\Type\Scalar\EmailType;
 use GraphQL\Application\Type\Scalar\UrlType;
+use GraphQL\Application\Type\QueryType;
+use GraphQL\Type\Definition\BooleanType;
 use GraphQL\Type\Definition\CustomScalarType;
+use GraphQL\Type\Definition\FloatType;
+use GraphQL\Type\Definition\IDType;
+use GraphQL\Type\Definition\IntType;
 use GraphQL\Type\Definition\ListOfType;
 use GraphQL\Type\Definition\NonNull;
+use GraphQL\Type\Definition\StringType;
 use GraphQL\Type\Definition\Type;
 
 /**
@@ -20,7 +26,7 @@ use GraphQL\Type\Definition\Type;
  */
 class Types
 {
-	/* Типы данных сущностей */
+    /* Типы данных сущностей */
     private static $user;
     private static $association;
     private static $group;
@@ -49,20 +55,17 @@ class Types
      * Группа
      *
      * @return GroupType
-    */
+     */
     public static function group()
     {
         return self::$group ?: (self::$group = new GroupType());
     }
 
 
-
-
-
-
     /* Корневые типы */
     private static $node;
-	private static $query;
+    private static $query;
+    private static $mutation;
 
     /**
      * Тип объекта, имеющего ID
@@ -74,34 +77,27 @@ class Types
         return self::$node ?: (self::$node = new NodeType());
     }
 
-	/**
-	 * Тип объекта с общими методами
-	 *
-	 * @return QueryType
-	 */
-	public static function query()
-	{
-		return self::$query ?: (self::$query = new QueryType());
-	}
-
-
-
-
-
-
-
+    /**
+     * Тип объекта с общими методами
+     *
+     * @return QueryType
+     */
+    public static function query()
+    {
+        return self::$query ?: (self::$query = new QueryType());
+    }
 
 
     /* Объектные типы данных */
-    private static $urlType;
     private static $emailType;
+    private static $urlType;
 
-	/**
-	 * Тип e-mail
-	 *
-	 * @return CustomScalarType
-	 */
-	public static function email()
+    /**
+     * Тип e-mail
+     *
+     * @return CustomScalarType
+     */
+    public static function email()
     {
         return self::$emailType ?: (self::$emailType = EmailType::create());
     }
@@ -117,26 +113,21 @@ class Types
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
     /* Базовые типы данных */
 
+    /**
+     *  Тип Boolean
+     *
+     * @return BooleanType
+     */
     public static function boolean()
     {
         return Type::boolean();
     }
 
     /**
-     * @return \GraphQL\Type\Definition\FloatType
+     * Тип Float
+     * @return FloatType
      */
     public static function float()
     {
@@ -144,7 +135,9 @@ class Types
     }
 
     /**
-     * @return \GraphQL\Type\Definition\IDType
+     * Тип ID
+     *
+     * @return IDType
      */
     public static function id()
     {
@@ -152,7 +145,9 @@ class Types
     }
 
     /**
-     * @return \GraphQL\Type\Definition\IntType
+     * Тип Integer
+     *
+     * @return IntType
      */
     public static function int()
     {
@@ -160,7 +155,9 @@ class Types
     }
 
     /**
-     * @return \GraphQL\Type\Definition\StringType
+     * Тип String
+     *
+     * @return StringType
      */
     public static function string()
     {
@@ -168,7 +165,9 @@ class Types
     }
 
     /**
-     * @param Type $type
+     * Массив данных
+     *
+     * @param Type $type передающийся тип данных
      * @return ListOfType
      */
     public static function listOf($type)
@@ -177,12 +176,14 @@ class Types
     }
 
     /**
+     * Для обязательных аргументов
+     *
      * @param Type $type
      * @return NonNull
      */
     public static function nonNull($type)
     {
-        return new NonNull($type);
+        return Type::NonNull($type);
     }
 
 }

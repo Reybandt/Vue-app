@@ -12,7 +12,6 @@ use GraphQL\Utils\Utils;
  */
 class User extends EntityBase
 {
-    public string $password;
     public string $surname;
     public string $name;
     public string $midname;

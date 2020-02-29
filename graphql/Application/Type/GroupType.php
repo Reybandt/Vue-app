@@ -22,7 +22,7 @@ class GroupType extends ObjectType
                 return [
                     'id' => Types::id(),
                     'idassociation' => Types::id(),
-                    'teacher' => ['type' => Types::string()],
+                    'teacher' => ['type' => Types::user()],
                     'study_days' => ['type' => Types::string()],
                     'study_times' => ['type' => Types::string()]
                 ];

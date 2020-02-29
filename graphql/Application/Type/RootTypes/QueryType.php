@@ -1,12 +1,15 @@
 <?php
+
 namespace GraphQL\Application\Type;
 
 use GraphQL\Application\AppContext;
+
+use GraphQL\Application\Data\User;
 use GraphQL\Application\Database\DataSource;
 use GraphQL\Application\Types;
 use GraphQL\Type\Definition\ObjectType;
+
 use GraphQL\Type\Definition\ResolveInfo;
-use GraphQL\Type\Definition\Type;
 
 /**
  * Class QueryType
@@ -20,44 +23,49 @@ class QueryType extends ObjectType
     public function __construct()
     {
         $config = [
-            'name' => 'Query',
-            'fields' => [
+            'fields' => function () {
+                return [
+                    // Здесь можно написать методы которые доступны в Query запросе
 
-            	// Не забывайте писать документацию методов и полей GraphQL, иначе они не будут зарегистрированы.
+                    'hello' => [
+                        'type' => Types::string(),
+                        'description' => 'Возвращает приветствие',
+                        'resolve' => function () {
+                            return 'Привет, GraphQL!';
+                        }
+                    ],
 
-	            // Методы
-                'association' => [
-                    'type' => Types::association(),
-                    'description' => 'Returns association by id (in range of 1-5)',
-                    'args' => [
-                        'id' => Types::nonNull(Types::id())
-                    ]
-                ],
+                    'association' => [
+                        'type' => Types::association(),
+                        'description' => 'Returns association by id (in range of 1-5)',
+                        'args' => [
+                            'id' => Types::nonNull(Types::id())
+                        ]
+                    ],
 
-                'group' => [
-                    'type' => Types::group(),
-                    'description' => 'Returns group by id (in range of 1-5)',
-                    'args' => [
-                        'id' => Types::nonNull(Types::id())
-                    ]
-                ],
+                    'group' => [
+                        'type' => Types::group(),
+                        'description' => 'Returns group by id (in range of 1-5)',
+                        'args' => [
+                            'id' => Types::nonNull(Types::id())
+                        ]
+                    ],
 
-                'user' => [
-                    'type' => Types::user(), // Тип данных, которые возвращает метод
-                    'description' => 'Returns user by id (in range of 1-5)', // Описание метода
-                    'args' => [ // Аргументы
-                        'id' => Types::nonNull(Types::id())
-                    ]
-                ],
+                    'user' => [
+                        'type' => Types::user(),
+                        'description' => 'Возвращает пользователя по id (in range of 1-5)',
+                        'args' => [
+                            'id' => Types::nonNull(Types::id())
+                        ]
+                    ],
 
-                'viewer' => [
-                    'type' => Types::user(), // Тип данных, которые возвращает метод
-                    'description' => 'Represents currently logged-in user (for the sake of example - simply returns user with id == 1)' // Описание поля
-                ],
-
-                'hello' => Type::string()
-            ],
-            'resolveField' => function($val, $args, $context, ResolveInfo $info) {
+                    'viewer' => [
+                        'type' => Types::user(), // Тип данных, которые возвращает метод
+                        'description' => 'Represents currently logged-in user (for the sake of example - simply returns user with id == 1)' // Описание поля
+                    ],
+                ];
+            },
+            'resolveField' => function ($val, $args, $context, ResolveInfo $info) {
                 return $this->{$info->fieldName}($val, $args, $context, $info);
             }
         ];
@@ -65,58 +73,57 @@ class QueryType extends ObjectType
     }
 
 
-    /*
-     *
-     */
-
     /**
      * Поиск единичного объединения из базы данных
      *
      * @param $rootValue
      * @param $args
+     * @param $context
      * @return mixed
-    */
+     */
     public function association($rootValue, $args, AppContext $context)
     {
-        return DataSource::find('Association', $args['id']);
+        return DataSource::select('Association', $args['id']);
     }
 
-    public function group($rootValue, $args, AppContext $context) {
-        return DataSource::find('Group', $args['id']);
-    }
-
-	/**
-	 * Поиск единичного пользователя из базы данных
-	 *
-	 * @param $rootValue
-	 * @param $args
-	 * @return mixed
-	 */
-	public function user($rootValue, $args, AppContext $context)
+    public function group($rootValue, $args, AppContext $context)
     {
-        return DataSource::find('User', $args['id']);
+        return DataSource::select('Group', $args['id']);
     }
 
-	/**
-	 * Текущий пользователь
-	 *
-	 * @param $rootValue
-	 * @param $args
-	 * @param AppContext $context
-	 * @return \GraphQL\Application\Data\User
-	 */
-	public function viewer($rootValue, $args, AppContext $context)
+    /**
+     * Поиск единичного пользователя из базы данных
+     *
+     * @param $rootValue
+     * @param $args
+     * @param AppContext $context
+     * @return mixed
+     */
+    public function user($rootValue, $args, AppContext $context)
+    {
+        return DataSource::select('User', $args['id']);
+    }
+
+    /**
+     * Текущий пользователь
+     *
+     * @param $rootValue
+     * @param $args
+     * @param AppContext $context
+     * @return \GraphQL\Application\Entity\User
+     */
+    public function viewer($rootValue, $args, AppContext $context)
     {
         return $context->viewer;
     }
 
 
-	/**
-	 * "Ping" о том, что сервер работает корректно
-	 *
-	 * @return string
-	 */
-	public function hello()
+    /**
+     * "Ping" о том, что сервер работает корректно
+     *
+     * @return string
+     */
+    public function hello()
     {
         return 'GraphQL сервер успешно работает.';
     }

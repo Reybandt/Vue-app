@@ -1,4 +1,5 @@
 <?php
+
 namespace GraphQL\Application\Type\Scalar;
 
 use GraphQL\Error\Error;

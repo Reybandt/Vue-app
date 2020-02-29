@@ -1,11 +1,12 @@
 <?php
+
 namespace GraphQL\Application\Type;
 
-use GraphQL\Application\AppContext;
-use GraphQL\Application\Database\DataSource;
 use GraphQL\Application\Data\User;
+
 use GraphQL\Application\Types;
 use GraphQL\Type\Definition\ObjectType;
+
 use GraphQL\Type\Definition\ResolveInfo;
 
 class UserType extends ObjectType
@@ -13,39 +14,93 @@ class UserType extends ObjectType
     public function __construct()
     {
         $config = [
-            'name' => 'User',
             'description' => 'Пользователи личного кабинета.',
-            'fields' => function() {
-
-	            // Не забывайте писать документацию методов и полей GraphQL, иначе они не будут зарегистрированы.
-
+            'fields' => function () {
                 return [
-                    'id' => Types::id(),
-	                'password' => ['type' => Types::string()],
-	                'surname' => ['type' => Types::string()],
-	                'name' => ['type' => Types::string()],
-	                'midname' => ['type' => Types::string()],
-	                'sex' => ['type' => Types::int()],
-	                'phone_number' => ['type' => Types::string()],
-	                'email' => Types::email(),
-	                'registration_address' => ['type' => Types::string()],
-	                'residence_address' => ['type' => Types::string()],
-	                'job_place' => ['type' => Types::string()],
-	                'job_position' => ['type' => Types::string()],
-	                'relationship' => ['type' => Types::string()],
-	                'childids' => ['type' => Types::string()],
-	                'study_place' => ['type' => Types::string()],
-	                'study_class' => ['type' => Types::string()],
-	                'date_registered' => ['type' => Types::string()],
-	                'birthday' => ['type' => Types::string()],
-	                'status_email' => ['type' => Types::string()],
-	                'verification_key_email' => ['type' => Types::string()],
+                    'id' => [
+                        'type' => Types::id(),
+                        'description' => 'Идентификатор'
+                    ],
+                    'surname' => [
+                        'type' => Types::string(),
+                        'description' => 'Фамилия'
+                    ],
+                    'name' => [
+                        'type' => Types::string(),
+                        'description' => 'Имя'
+                    ],
+                    'midname' => [
+                        'type' => Types::string(),
+                        'description' => 'Отчество'
+                    ],
+                    'sex' => [
+                        'type' => Types::int(),
+                        'description' => 'Пол. 0 - муж, 1 - жен'
+                    ],
+                    'phone_number' => [
+                        'type' => Types::string(),
+                        'description' => 'Телефон'
+                    ],
+                    'email' => [
+                        'type' => Types::email(),
+                        'description' => 'E-mail'
+                    ],
+                    'registration_address' => [
+                        'type' => Types::string(),
+                        'description' => 'Адрес регистрации'
+                    ],
+                    'residence_address' => [
+                        'type' => Types::string(),
+                        'description' => 'Адрес проживания'
+                    ],
+                    'job_place' => [
+                        'type' => Types::string(),
+                        'description' => 'Место работы'
+                    ],
+                    'job_position' => [
+                        'type' => Types::string(),
+                        'description' => 'Должность'
+                    ],
+                    'relationship' => [
+                        'type' => Types::string(),
+                        'description' => 'Степень родства'
+                    ],
+                    'childids' => [
+                        'type' => Types::listOf(Types::id()),
+                        'description' => 'Идентификаторы детей'
+                    ],
+                    'study_place' => [
+                        'type' => Types::string(),
+                        'description' => 'Адрес и номер школы (если есть)'
+                    ],
+                    'study_class' => [
+                        'type' => Types::string(),
+                        'description' => 'Класс (если есть)'
+                    ],
+                    'date_registered' => [
+                        'type' => Types::string(),
+                        'description' => 'Дата регистрации'
+                    ],
+                    'birthday' => [
+                        'type' => Types::string(),
+                        'description' => 'Дата рождения'
+                    ],
+                    'status_email' => [
+                        # TODO Узнать что за поле
+                        'type' => Types::string(),
+                        'description' => 'Status email?'
+                    ],
+                    'verification_key_email' => [
+                        # TODO Узнать что за поле
+                        'type' => Types::string(),
+                        'description' => 'Verification key email?'
+                    ],
                 ];
             },
             'interfaces' => [
                 Types::node() //объект, имеющий ID
             ],
-            'resolveField' => function($value, $args, $context, ResolveInfo $info) {
+            'resolveField' => function ($value, $args, $context, ResolveInfo $info) {
                 $method = 'resolve' . ucfirst($info->fieldName);
                 if (method_exists($this, $method)) {
                     return $this->{$method}($value, $args, $context, $info);
