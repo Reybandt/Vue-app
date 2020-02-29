@@ -33,6 +33,15 @@ class QueryType extends ObjectType
                         'id' => Types::nonNull(Types::id())
                     ]
                 ],
+
+                'group' => [
+                    'type' => Types::group(),
+                    'description' => 'Returns group by id (in range of 1-5)',
+                    'args' => [
+                        'id' => Types::nonNull(Types::id())
+                    ]
+                ],
+
                 'user' => [
                     'type' => Types::user(), // Тип данных, которые возвращает метод
                     'description' => 'Returns user by id (in range of 1-5)', // Описание метода
@@ -70,6 +79,10 @@ class QueryType extends ObjectType
     public function association($rootValue, $args, AppContext $context)
     {
         return DataSource::find('Association', $args['id']);
+    }
+
+    public function group($rootValue, $args, AppContext $context) {
+        return DataSource::find('Group', $args['id']);
     }
 
 	/**

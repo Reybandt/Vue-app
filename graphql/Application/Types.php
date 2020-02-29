@@ -23,6 +23,7 @@ class Types
 	/* Типы данных сущностей */
     private static $user;
     private static $association;
+    private static $group;
 
     /**
      * Пользователь
@@ -44,7 +45,15 @@ class Types
         return self::$association ?: (self::$association = new AssociationType());
     }
 
-
+    /**
+     * Группа
+     *
+     * @return GroupType
+    */
+    public static function group()
+    {
+        return self::$group ?: (self::$group = new GroupType());
+    }
 
 
 
@@ -175,4 +184,5 @@ class Types
     {
         return new NonNull($type);
     }
+
 }
