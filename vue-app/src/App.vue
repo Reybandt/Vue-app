@@ -32,8 +32,8 @@
                     <p v-for="(value) in b.day">
                         <span v-if="value.num === index">
                             <strong>{{ value.les }}</strong><br>
-                            <em style="color: lightslategrey">каб. {{ value.cab }}</em><br>
-                            <u  style="color: lightslategrey">{{ value.prof}}</u><br>
+                            <em class="schedule_more_info">каб. {{ value.cab }}</em><br>
+                            <u  class="schedule_more_info">{{ value.prof}}</u><br>
                         </span>
                     </p>
                 </td>
@@ -43,67 +43,37 @@
         <ul v-if="date === 'week_list' & type === 'a'" class="schedule">
 
             <nav aria-label="Page navigation example">
-                <ul class="pagination justify-content-center color-red">
+                <ul
+                    class="pagination justify-content-center color-red"
+                    @click="isActive = true">
                     <router-link
+                        v-for="i in blocks.length"
                         tag="li"
                         class="page-item"
-                        :to="{name: '', query: {week_day: cols[counter + 1].text, block: blocks[counter].day}}">
-                        <a class="page-link">Пн</a>
-                    </router-link>
-                    <router-link
-                        tag="li"
-                        class="page-item"
-                        :to="{name: '', query: {week_day: cols[counter + 2].text, block: blocks[counter + 1].day}}">
-                        <a class="page-link">Вт</a>
-                    </router-link>
-                    <router-link
-                        tag="li"
-                        class="page-item"
-                        :to="{name: '', query: {week_day: cols[counter + 3].text, block: blocks[counter + 2].day}}">
-                        <a class="page-link">Ср</a>
-                    </router-link>
-                    <router-link
-                        tag="li"
-                        class="page-item"
-                        :to="{name: '', query: {week_day: cols[counter + 4].text, block: blocks[counter + 3].day}}">
-                        <a class="page-link">Чт</a>
-                    </router-link>
-                    <router-link
-                        tag="li"
-                        class="page-item"
-                        :to="{name: '', query: {week_day: cols[counter + 5].text, block: blocks[counter + 4].day}}">
-                        <a class="page-link">Пт</a>
-                    </router-link>
-                    <router-link
-                        tag="li"
-                        class="page-item"
-                        :to="{name: '', query: {week_day: cols[counter + 6].text, block: blocks[counter + 5].day}}">
-                        <a class="page-link">Сб</a>
-                    </router-link>
-                    <router-link
-                        tag="li"
-                        class="page-item"
-                        :to="{name: '', query: {week_day: cols[counter + 7].text, block: blocks[counter + 6].day}}">
-                        <a class="page-link">Вс</a>
+                        :to="{name: '', query: {week_day: cols[i].text, id: i - 1}}"
+                    >
+                        <a class="page-link">{{ numberingValues[i] }}</a>
                     </router-link>
                 </ul>
             </nav>
 
             <h5 class="container text-center pb-4 pt-4"> {{ $route.query.week_day }}</h5>
 
-            <li v-for="value in  $route.query.block" >
+            <li v-for="value in  blocks[id].day">
                     <div v-for="(item, index) in times" class="schedule_day">
                         <span v-if="value.num === index">
-                            <em style="color: darkblue">{{ item }}</em>
+                            <p class="schedule_time">
+                                <em class='schedule_time'>
+                                    {{ item }}
+                                </em></p>
                             <div class="container text-center">
                                 <strong>{{ value.les }}</strong><br>
                                 <em
-                                    style="color: lightslategrey;
-                                    padding-right: 15px"
+                                    class="schedule_more_info"
                                 >
                                     каб. {{ value.cab }}
                                 </em><br>
-                                <u  style="color: lightslategrey">{{ value.prof}}</u><br>
+                                <u  class="schedule_more_info">{{ value.prof}}</u><br>
                                 <hr>
                             </div>
                         </span>
@@ -120,10 +90,20 @@
 export default {
   data () {
     return {
-      counter: 0,
+      isActive: false,
       type: 'a',
       date: 'week_grid',
       defaultOption: 'общее',
+      numberingValues: [
+        'Дни недели',
+        'Пн',
+        'Вт',
+        'Ср',
+        'Чт',
+        'Пт',
+        'Сб',
+        'Вс'
+      ],
       scheduleOptions: [
         'общее расписание',
         'персонализированное расписание',
@@ -679,6 +659,13 @@ export default {
       ]
     }
   },
+  computed: {
+    id () {
+      if (this.isActive === false) {
+        return 0} else {
+        return this.$route.query.id}
+    }
+  },
   methods: {
     chooseForm (event) {
       if (event.target.value === this.scheduleOptions[1]) {
@@ -719,7 +706,25 @@ export default {
         margin-top: 15px;
         margin-bottom: 15px;
     }
+
     .schedule_day {
         color: black;
+    }
+
+    .schedule_time {
+        color: darkblue;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .schedule_more_info {
+        color: lightslategrey;
+    }
+
+    li {
+        list-style-type: none;
+    }
+    ul {
+        padding-left: 0;
     }
 </style>
