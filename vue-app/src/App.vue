@@ -58,7 +58,7 @@
                 </ul>
             </nav>
 
-            <h5 class="container text-center pb-4 pt-4"> {{ $route.query.week_day }}</h5>
+            <h5 class="container text-center pb-4 pt-4"> {{ week_day }}</h5>
 
             <li v-for="value in  blocks[id].day">
                     <div v-for="(item, index) in times" class="schedule_day">
@@ -98,7 +98,7 @@
                 </ul>
             </nav>
 
-            <h5 class="container text-center pb-4 pt-4"> {{ $route.query.week_day }}</h5>
+            <h5 class="container text-center pb-4 pt-4"> {{ week_day }}</h5>
             <table class="table table-bordered">
                 <thead>
                 <tr>
@@ -655,6 +655,12 @@ export default {
       if (this.weekListActive === false && this.dayGridActive === false) {
         return 0} else {
         return this.$route.query.id
+      }
+    },
+    week_day () {
+      if (this.weekListActive === false && this.dayGridActive === false) {
+        return this.cols[1].text} else {
+        return this.$route.query.week_day
       }
     },
     day_time () {
