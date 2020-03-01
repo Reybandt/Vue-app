@@ -268,30 +268,12 @@ export default {
               les: 'Авиамоделирование',
               cab: 111,
               prof: 'Иван Игоревич Антонов',
-              num: 0
+              num: 3
             },
             {
               les: 'Web-дизайн',
               cab: 435,
               prof: 'Александр Андреевич Сомов',
-              num: 0
-            },
-            {
-              les: 'b1',
-              cab: 111,
-              prof: 'Степан Иванов',
-              num: 1
-            },
-            {
-              les: 'c1',
-              cab: 111,
-              prof: 'Степан Иванов',
-              num: 2
-            },
-            {
-              les: 'd1',
-              cab: 111,
-              prof: 'Степан Иванов',
               num: 3
             },
             {
@@ -347,23 +329,57 @@ export default {
         {
           day: [
             {
-              les: 'a',
+              les: 'e',
               cab: 111,
               prof: 'Иван Антонов',
-              num: 0
+              num: 4
             },
             {
-              les: 'b',
+              les: 'f',
               cab: 111,
               prof: 'Иван Антонов',
-              num: 1
+              num: 5
             },
             {
-              les: 'c',
+              les: 'g',
               cab: 111,
               prof: 'Иван Антонов',
-              num: 2
+              num: 6
             },
+            {
+              les: 'h',
+              cab: 111,
+              prof: 'Иван Антонов',
+              num: 7
+            },
+            {
+              les: 'i',
+              cab: 111,
+              prof: 'Иван Антонов',
+              num: 8
+            },
+            {
+              les: 'j',
+              cab: 111,
+              prof: 'Иван Антонов',
+              num: 9
+            },
+            {
+              les: 'k',
+              cab: 111,
+              prof: 'Иван Антонов',
+              num: 10
+            },
+            {
+              les: 'l',
+              cab: 111,
+              prof: 'Иван Антонов',
+              num: 11
+            }
+          ]
+        },
+        {
+          day: [
             {
               les: 'd',
               cab: 111,
@@ -423,24 +439,6 @@ export default {
         {
           day: [
             {
-              les: 'a',
-              cab: 111,
-              prof: 'Иван Антонов',
-              num: 0
-            },
-            {
-              les: 'b',
-              cab: 111,
-              prof: 'Иван Антонов',
-              num: 1
-            },
-            {
-              les: 'c',
-              cab: 111,
-              prof: 'Иван Антонов',
-              num: 2
-            },
-            {
               les: 'd',
               cab: 111,
               prof: 'Иван Антонов',
@@ -499,24 +497,6 @@ export default {
         {
           day: [
             {
-              les: 'a',
-              cab: 111,
-              prof: 'Иван Антонов',
-              num: 0
-            },
-            {
-              les: 'b',
-              cab: 111,
-              prof: 'Иван Антонов',
-              num: 1
-            },
-            {
-              les: 'c',
-              cab: 111,
-              prof: 'Иван Антонов',
-              num: 2
-            },
-            {
               les: 'd',
               cab: 111,
               prof: 'Иван Антонов',
@@ -574,100 +554,6 @@ export default {
         },
         {
           day: [
-            {
-              les: 'a',
-              cab: 111,
-              prof: 'Иван Антонов',
-              num: 0
-            },
-            {
-              les: 'b',
-              cab: 111,
-              prof: 'Иван Антонов',
-              num: 1
-            },
-            {
-              les: 'c',
-              cab: 111,
-              prof: 'Иван Антонов',
-              num: 2
-            },
-            {
-              les: 'd',
-              cab: 111,
-              prof: 'Иван Антонов',
-              num: 3
-            },
-            {
-              les: 'e',
-              cab: 111,
-              prof: 'Иван Антонов',
-              num: 4
-            },
-            {
-              les: 'f',
-              cab: 111,
-              prof: 'Иван Антонов',
-              num: 5
-            },
-            {
-              les: 'g',
-              cab: 111,
-              prof: 'Иван Антонов',
-              num: 6
-            },
-            {
-              les: 'h',
-              cab: 111,
-              prof: 'Иван Антонов',
-              num: 7
-            },
-            {
-              les: 'i',
-              cab: 111,
-              prof: 'Иван Антонов',
-              num: 8
-            },
-            {
-              les: 'j',
-              cab: 111,
-              prof: 'Иван Антонов',
-              num: 9
-            },
-            {
-              les: 'k',
-              cab: 111,
-              prof: 'Иван Антонов',
-              num: 10
-            },
-            {
-              les: 'l',
-              cab: 111,
-              prof: 'Иван Антонов',
-              num: 11
-            }
-          ]
-        },
-        {
-          day: [
-            {
-              les: 'a',
-              cab: 111,
-              prof: 'Иван Антонов',
-              num: 0
-            },
-            {
-              les: 'b',
-              cab: 111,
-              prof: 'Иван Антонов',
-              num: 1
-            },
-            {
-              les: 'c',
-              cab: 111,
-              prof: 'Иван Антонов',
-              num: 2
-            },
             {
               les: 'd',
               cab: 111,
