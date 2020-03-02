@@ -4,6 +4,7 @@ namespace GraphQL\Application;
 
 use GraphQL\Application\Type\AssociationType;
 use GraphQL\Application\Type\UserType;
+use GraphQL\Application\Type\GroupType;
 use GraphQL\Application\Type\NodeType;
 use GraphQL\Application\Type\Scalar\EmailType;
 use GraphQL\Application\Type\Scalar\UrlType;
@@ -114,7 +115,6 @@ class Types
 
 
     /* Базовые типы данных */
-
     /**
      *  Тип Boolean
      *

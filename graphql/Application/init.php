@@ -18,7 +18,7 @@ use GraphQL\Application\Entity\Association;
 use GraphQL\Application\Entity\User;
 use \GraphQL\Application\Types;
 use \GraphQL\Application\AppContext;
-use \GraphQL\Application\Database\DataSource;
+use \GraphQL\Application\Database\DB;
 use \GraphQL\Type\Schema;
 use \GraphQL\GraphQL;
 use \GraphQL\Error\FormattedError;
@@ -41,7 +41,7 @@ $debug = Debug::INCLUDE_DEBUG_MESSAGE | Debug::INCLUDE_TRACE;
 
 try {
     // Симуляция текущего пользователя
-    $current_user = DataSource::select('User', 2);
+    $current_user = DB::find('User', 2);
     if ($current_user == null) {
         throw new Exception("Текущий пользователь не найден.");
     }

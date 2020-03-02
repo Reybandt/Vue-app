@@ -2,19 +2,13 @@
 
 namespace GraphQL\Application\Type;
 
-use GraphQL\Application\AppContext;
-
-use GraphQL\Application\Data\User;
-use GraphQL\Application\Database\DataSource;
+use GraphQL\Application\Database\DB;
 use GraphQL\Application\Types;
 use GraphQL\Type\Definition\ObjectType;
-
-use GraphQL\Type\Definition\ResolveInfo;
 
 /**
  * Class QueryType
  * Корневой тип, содержащий общие методы по нахождению других типов.
- *
  *
  * @package GraphQL\Application\Type
  */
@@ -25,106 +19,56 @@ class QueryType extends ObjectType
         $config = [
             'fields' => function () {
                 return [
-                    // Здесь можно написать методы которые доступны в Query запросе
-
                     'hello' => [
                         'type' => Types::string(),
                         'description' => 'Возвращает приветствие',
                         'resolve' => function () {
-                            return 'Привет, GraphQL!';
+                            return 'GraphQL works';
                         }
                     ],
 
-                    'association' => [
-                        'type' => Types::association(),
-                        'description' => 'Returns association by id (in range of 1-5)',
-                        'args' => [
-                            'id' => Types::nonNull(Types::id())
-                        ]
+                    'allGroups' => [
+                        'type' => Types::listOf(Types::group()),
+                        'description' => 'Список всех групп',
+                        'resolve' => function () {
+                            return DB::select("SELECT * from groups");
+                        }
                     ],
 
-                    'group' => [
+                    'allUsers' => [
+                        'type' => Types::listOf(Types::user()),
+                        'description' => 'Список всех пользователей',
+                        'resolve' => function () {
+                            return DB::select("SELECT * from user");
+                        }
+                    ],
+
+                    'selectGroupById' => [
                         'type' => Types::group(),
-                        'description' => 'Returns group by id (in range of 1-5)',
+                        'description' => 'Поиск группы по id',
                         'args' => [
                             'id' => Types::nonNull(Types::id())
-                        ]
+                        ],
+                        'resolve' => function ($root, $args) {
+                            return DB::selectOne("SELECT * from groups WHERE id = {$args['id']}");
+                        }
                     ],
 
-                    'user' => [
+                    'selectUserById' => [
                         'type' => Types::user(),
                         'description' => 'Возвращает пользователя по id (in range of 1-5)',
                         'args' => [
                             'id' => Types::nonNull(Types::id())
-                        ]
+                        ],
+                        'resolve' => function ($root, $args) {
+                            return DB::selectOne("SELECT * from user WHERE id = {$args['id']}");
+                        }
                     ],
 
-                    'viewer' => [
-                        'type' => Types::user(), // Тип данных, которые возвращает метод
-                        'description' => 'Represents currently logged-in user (for the sake of example - simply returns user with id == 1)' // Описание поля
-                    ],
+                    // Здесь можно написать методы которые доступны в Query запросе
                 ];
-            },
-            'resolveField' => function ($val, $args, $context, ResolveInfo $info) {
-                return $this->{$info->fieldName}($val, $args, $context, $info);
             }
         ];
         parent::__construct($config);
-    }
-
-
-    /**
-     * Поиск единичного объединения из базы данных
-     *
-     * @param $rootValue
-     * @param $args
-     * @param $context
-     * @return mixed
-     */
-    public function association($rootValue, $args, AppContext $context)
-    {
-        return DataSource::select('Association', $args['id']);
-    }
-
-    public function group($rootValue, $args, AppContext $context)
-    {
-        return DataSource::select('Group', $args['id']);
-    }
-
-    /**
-     * Поиск единичного пользователя из базы данных
-     *
-     * @param $rootValue
-     * @param $args
-     * @param AppContext $context
-     * @return mixed
-     */
-    public function user($rootValue, $args, AppContext $context)
-    {
-        return DataSource::select('User', $args['id']);
-    }
-
-    /**
-     * Текущий пользователь
-     *
-     * @param $rootValue
-     * @param $args
-     * @param AppContext $context
-     * @return \GraphQL\Application\Entity\User
-     */
-    public function viewer($rootValue, $args, AppContext $context)
-    {
-        return $context->viewer;
-    }
-
-
-    /**
-     * "Ping" о том, что сервер работает корректно
-     *
-     * @return string
-     */
-    public function hello()
-    {
-        return 'GraphQL сервер успешно работает.';
     }
 }

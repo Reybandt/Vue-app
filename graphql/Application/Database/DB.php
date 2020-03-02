@@ -8,24 +8,26 @@ use PDO;
 use PDOException;
 
 /**
- * Class DataSource
+ * Class DB
  * Менеджер по работе с базой данных (используется PDO).
  *
  * @package GraphQL\Application
  */
-class DataSource
+class DB
 {
     /**
-     * Адаптер PDO для работы с базой данных
+     * Активное PDO соединение
      *
      * @var PDO
      */
     private static PDO $pdo;
 
     /**
-     * Инициализация адаптера
+     * Инициализация PDO соединения
+     *
+     * @param array $config
      */
-    private static function initInstance()
+    private static function init()
     {
 
         if (!isset(self::$pdo)) {
@@ -43,12 +45,50 @@ class DataSource
             }
 //			self::$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         }
-
     }
 
     /**
-     * Получение адаптера
+     * Выполнение запроса select и возвращение одной строки
      *
+     * @param string $query
+     * @return mixed
+     */
+    public static function selectOne($query)
+    {
+        $records = self::select($query);
+        return array_shift($records);
+    }
+
+    /**
+     * Выполнение запроса select и возвращение строк
+     *
+     * @param string $query Запрос
+     * @return array
+     */
+    public static function select($query)
+    {
+        $statement = self::$pdo->query($query);
+        return $statement->fetchAll();
+    }
+
+    /**
+     * Выполнение запроса и возвращение количества затронутых строк
+     *
+     * @param string $query
+     * @return int
+     */
+    public static function affectingStatement($query)
+    {
+        $statement = self::$pdo->query($query);
+        return $statement->rowCount();
+    }
+
+
+
+
+
+    /**
+     * Получение адаптера
      * @return PDO
      */
     public static function getPDO()
@@ -59,16 +99,16 @@ class DataSource
     /**
      * Нахождение сущности по ID
      * Пример использования:
-     *      DataSource::find('User', 1);
+     *      DB::find('User', 1);
      *
      * @param string $class
      * @param int $id
      * @return mixed|null
      */
-    public static function select(string $class, int $id)
+    public static function find(string $class, int $id)
     {
         $bindings = ["id" => (string)$id];
-        return self::selectOne($class, "id = :id", $bindings);
+        return self::findOne($class, "id = :id", $bindings);
     }
 
     /**
@@ -80,7 +120,7 @@ class DataSource
      * @param array $bindings
      * @return mixed|null
      */
-    public static function selectOne(string $class, string $query, array $bindings = [])
+    public static function findOne(string $class, string $query, array $bindings = [])
     {
         $result = self::selectAll($class, $query . " LIMIT 1", $bindings);
         return (count($result) > 0) ? $result[0] : null;
@@ -97,7 +137,7 @@ class DataSource
     public static function selectAll(string $class, string $query, array $bindings = []): array
     {
 
-        self::initInstance();
+        self::init();
 
         $class = "\\GraphQL\\Application\\Entity\\{$class}";
         $assoc_table = (new $class(null))->__getTable();
@@ -128,5 +168,4 @@ class DataSource
         }
         return $result;
     }
-
 }

@@ -2,12 +2,8 @@
 
 namespace GraphQL\Application\Type;
 
-use GraphQL\Application\Data\User;
-
 use GraphQL\Application\Types;
 use GraphQL\Type\Definition\ObjectType;
-
-use GraphQL\Type\Definition\ResolveInfo;
 
 class UserType extends ObjectType
 {
@@ -65,9 +61,9 @@ class UserType extends ObjectType
                         'type' => Types::string(),
                         'description' => 'Степень родства'
                     ],
-                    'childids' => [
-                        'type' => Types::listOf(Types::id()),
-                        'description' => 'Идентификаторы детей'
+                    'children' => [
+                        'type' => Types::listOf(Types::user()),
+                        'description' => 'Идентификаторы детей',
                     ],
                     'study_place' => [
                         'type' => Types::string(),
@@ -85,45 +81,16 @@ class UserType extends ObjectType
                         'type' => Types::string(),
                         'description' => 'Дата рождения'
                     ],
-                    'status_email' => [
-                        # TODO Узнать что за поле
-                        'type' => Types::string(),
-                        'description' => 'Status email?'
-                    ],
-                    'verification_key_email' => [
-                        # TODO Узнать что за поле
-                        'type' => Types::string(),
-                        'description' => 'Verification key email?'
-                    ],
+                    'role' => [
+                        'type' => Types::listOf(Types::string()),
+                        'description' => 'Роль пользователя'
+                    ]
                 ];
             },
             'interfaces' => [
                 Types::node() //объект, имеющий ID
             ],
-            'resolveField' => function ($value, $args, $context, ResolveInfo $info) {
-                $method = 'resolve' . ucfirst($info->fieldName);
-                if (method_exists($this, $method)) {
-                    return $this->{$method}($value, $args, $context, $info);
-                } else {
-                    return $value->{$info->fieldName};
-                }
-            }
         ];
         parent::__construct($config);
     }
-
-    /*
-     * <b>Как добавить свое GraphQL полё</b>
-     * Любой видимый для GraphQL в данном классе метод должен:
-     *  1) быть публичной функцией,
-     *  2) начинаться со слова 'resolve' (см. код на строчках 34-39), последующее слово должно быть написано с большой буквы (например, resolveMyName или resolveMyname и т.п.)
-     * Не стоит забывать, что метод должен вернуть какое-нибудь значение для клиента.
-     *
-     * Пример объявления:
-    public function resolvePhoto(User $user, $args)
-    {
-        return DataSource::getUserPhoto($user->id, $args['size']);
-    }
-    */
-
 }

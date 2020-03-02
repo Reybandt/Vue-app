@@ -1,42 +1,47 @@
 <?php
 
 
-namespace GraphQL\Application;
+namespace GraphQL\Application\Type;
 
-use GraphQL\Application\AppContext;
-use GraphQL\Application\Database\DataSource;
-use GraphQL\Application\Data\Group;
+use GraphQL\Application\Database\DB;
 use GraphQL\Application\Types;
 use GraphQL\Type\Definition\ObjectType;
-use GraphQL\Type\Definition\ResolveInfo;
 
 class GroupType extends ObjectType
 {
     public function __construct()
     {
         $config = [
-            'name' => 'Group',
-            'description' => 'Группы',
-            'fields' => function() {
-                // Не забывайте писать документацию методов и полей GraphQL, иначе они не будут зарегистрированы.
+            'description' => 'Группа',
+            'fields' => function () {
                 return [
-                    'id' => Types::id(),
-                    'idassociation' => Types::id(),
-                    'teacher' => ['type' => Types::user()],
-                    'study_days' => ['type' => Types::string()],
-                    'study_times' => ['type' => Types::string()]
+                    'id' => [
+                        'type' => Types::id(),
+                        'description' => 'Идентификатор группы'
+                    ],
+
+                    'association' => [
+                        'type' => Types::association(),
+                        'description' => 'объединение',
+                        'resolve' => function ($root) {
+                            return DB::selectOne(
+                                "SELECT a.* FROM groups g INNER JOIN association a ON a.id = g.idassociation");
+                        }
+                    ],
+
+                    'teacher' => [
+                        'type' => Types::string(),
+                        'description' => 'Преподователь'
+                    ],
+
+                    'study_days' => [
+                        'type' => Types::string()
+                    ],
+
+                    'study_times' => [
+                        'type' => Types::string()
+                    ]
                 ];
-            },
-            'intefaces' => [
-                Types::node()
-            ],
-            'resolveField' => function($value, $args, $context, ResolveInfo $info) {
-                $method = 'resolve' . ucfirst($info->fieldName);
-                if (method_exists($this, $method)) {
-                    return $this->{$method}($value, $args, $context, $info);
-                } else {
-                    return $value->{$info->fieldName};
-                }
             }
         ];
         parent::__construct($config);
