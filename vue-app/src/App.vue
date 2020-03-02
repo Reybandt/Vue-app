@@ -1,7 +1,6 @@
 <template>
-    <div id="app" class="container">
+    <div id="app" class="container pt-5">
         <h2>Ваше расписание</h2>
-
         <p>
         <span><label><select @change="chooseForm">
           <option
@@ -28,19 +27,103 @@
             </thead>
             <tbody>
             <tr v-for="(item, index) in times">
-                <th scope="row">{{ item.text }}</th>
+                <th scope="row">{{ item }}</th>
                 <td v-for="b in blocks">
                     <p v-for="(value) in b.day">
                         <span v-if="value.num === index">
-                            {{ value.les }}<br>
-                            каб. {{ value.cab }}<br>
-                            {{ value.prof}}<br>
+                            <strong>{{ value.les }}</strong><br>
+                            <em class="schedule_more_info">каб. {{ value.cab }}</em><br>
+                            <u  class="schedule_more_info">{{ value.prof}}</u><br>
                         </span>
                     </p>
                 </td>
             </tr>
             </tbody>
         </table>
+
+        <ul v-if="date === 'week_list' & type === 'a'" class="schedule">
+
+            <nav aria-label="Page navigation example">
+                <ul
+                    class="pagination justify-content-center color-red"
+                    @click="weekListActive = true">
+                    <router-link
+                        v-for="i in blocks.length"
+                        tag="li"
+                        class="page-item"
+                        :to="{name: '', query: {week_day: cols[i].text, id: i - 1, day_time: 0}}"
+                    >
+                        <a class="page-link">{{ numberingValues[i] }}</a>
+                    </router-link>
+                </ul>
+            </nav>
+
+            <h5 class="container text-center pb-4 pt-4"> {{ week_day }}</h5>
+
+            <li v-for="value in  blocks[id].day">
+                    <div v-for="(item, index) in times" class="schedule_day">
+                        <span v-if="value.num === index">
+                            <p class="schedule_time">
+                                <em class='schedule_time'>
+                                    {{ item }}
+                                </em></p>
+                            <div class="container text-center">
+                                <strong>{{ value.les }}</strong><br>
+                                <em
+                                    class="schedule_more_info"
+                                >
+                                    каб. {{ value.cab }}
+                                </em><br>
+                                <u  class="schedule_more_info">{{ value.prof}}</u><br>
+                                <hr>
+                            </div>
+                        </span>
+                    </div>
+            </li>
+        </ul>
+
+        <div v-if="date === 'day' & type === 'a'">
+            <nav aria-label="Page navigation example#2">
+                <ul
+                    class="pagination justify-content-center color-red"
+                    @click="dayGridActive = true">
+                    <router-link
+                        v-for="i in blocks.length"
+                        tag="li"
+                        class="page-item"
+                        :to="{name: '', query: {week_day: cols[i].text, id: i - 1, day_time: blocks[(i - 1)].day[0].num}}"
+                    >
+                        <a class="page-link">{{ numberingValues[i] }}</a>
+                    </router-link>
+                </ul>
+            </nav>
+
+            <h5 class="container text-center pb-4 pt-4"> {{ week_day }}</h5>
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>Кабинеты</th>
+                    <th scope="col" v-for="room in cabs">{{ room }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr
+                    v-for="(time, index) in times"
+                    v-if="index >= $route.query.day_time">
+                    <th scope="row">{{ time }}</th>
+                    <td v-for="room in cabs">
+                        <p v-for="value in  blocks[id].day">
+                            <span v-if="room === value.cab && index === value.num">
+                                <strong>{{ value.les }}</strong><br>
+                                <u  class="schedule_more_info">{{ value.prof}}</u><br>
+                            </span>
+                        </p>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
         <p v-if="type === 'b'">Здесь скоро будет твое персонализированное расписание!</p>
         <p v-if="type === 'c'">Здесь скоро будет твое расписание занятости по педагогам!</p>
         <p v-if="type === 'd'">Здесь скоро будет твое расписание занятости по кабинетам!</p>
@@ -51,9 +134,21 @@
 export default {
   data () {
     return {
+      weekListActive: false,
+      dayGridActive: false,
       type: 'a',
       date: 'week_grid',
       defaultOption: 'общее',
+      numberingValues: [
+        'Дни недели',
+        'Пн',
+        'Вт',
+        'Ср',
+        'Чт',
+        'Пт',
+        'Сб',
+        'Вс'
+      ],
       scheduleOptions: [
         'общее расписание',
         'персонализированное расписание',
@@ -68,18 +163,18 @@ export default {
         'список на неделю'
       ],
       times: [
-        { text: '10:00-10:45' },
-        { text: '10:55-11:40' },
-        { text: '11:50-12:35' },
-        { text: '12:45-13:30' },
-        { text: '13:40-14:25' },
-        { text: '14:35-15:20' },
-        { text: '15:30-16:15' },
-        { text: '16:25-17:10' },
-        { text: '17:20-18:05' },
-        { text: '18:15-19:00' },
-        { text: '19:10-19:55' },
-        { text: '20:05-20:50' }
+        '10:00-10:45',
+        '10:55-11:40',
+        '11:50-12:35',
+        '12:45-13:30',
+        '13:40-14:25',
+        '14:35-15:20',
+        '15:30-16:15',
+        '16:25-17:10',
+        '17:20-18:05',
+        '18:15-19:00',
+        '19:10-19:55',
+        '20:05-20:50'
       ],
       cols: [
         { text: 'время' },
@@ -91,20 +186,56 @@ export default {
         { text: 'суббота' },
         { text: 'воскресенье' }
       ],
+      cabs: [
+          117,
+          202,
+          319,
+          325
+      ],
       blocks: [
         {
           day: [
             {
-              les: '\tИнженер PRO (образ.пакет): инженерное 3d моделирование и прототипирование',
+              les: 'Е-текстиль',
+              cab: 319,
+              prof: 'Королева Т. Н.',
+              num: 2
+            },
+            {
+              les: 'Е-текстиль',
+              cab: 319,
+              prof: 'Королева Т. Н.',
+              num: 3
+            },
+            {
+              les: 'Е-текстиль',
+              cab: 319,
+              prof: 'Королева Т. Н.',
+              num: 4
+            },
+            {
+              les: 'Е-текстиль',
+              cab: 319,
+              prof: 'Королева Т. Н.',
+              num: 5
+            },
+            {
+              les: 'Юный конструктор Lego',
+              cab: 202,
+              prof: 'Любимова В. В.',
+              num: 6
+            },
+            {
+              les: 'Юный конструктор Lego',
+              cab: 202,
+              prof: 'Любимова В. В.',
+              num: 7
+            },
+            {
+              les: 'Инженер PRO (образ.пакет): инженерное 3d моделирование и прототипирование',
               cab: 319,
               prof: 'Рытов А. М.',
               num: 8
-            },
-            {
-              les: '\tИнженер PRO (образ.пакет): инженерное 3d моделирование и прототипирование',
-              cab: 319,
-              prof: 'Рытов А. М.',
-              num: 9
             },
             {
               les: 'Инженер PRO (образ.пакет): программирование микроконтроллеров',
@@ -113,28 +244,52 @@ export default {
               num: 8
             },
             {
+              les: 'Интернет вещей',
+              cab: 117,
+              prof: 'Эрлеман П. И.',
+              num: 8
+            },
+            {
+              les: 'Инженер PRO (образ.пакет): инженерное 3d моделирование и прототипирование',
+              cab: 319,
+              prof: 'Рытов А. М.',
+              num: 9
+            },
+            {
               les: 'Инженер PRO (образ.пакет): программирование микроконтроллеров',
               cab: 325,
               prof: 'Королева Т. Н.',
               num: 9
             },
             {
-              les: '\tИнженер PRO (образ.пакет): инженерное 3d моделирование и прототипирование',
+              les: 'Интернет вещей',
+              cab: 117,
+              prof: 'Эрлеман П. И.',
+              num: 9
+            },
+            {
+              les: 'Инженер PRO (образ.пакет): инженерное 3d моделирование и прототипирование',
               cab: 319,
               prof: 'Рытов А. М.',
               num: 10
-            },
-            {
-              les: '\tИнженер PRO (образ.пакет): инженерное 3d моделирование и прототипирование',
-              cab: 319,
-              prof: 'Рытов А. М.',
-              num: 11
             },
             {
               les: 'Киберэлектроника',
               cab: 325,
               prof: 'Черкасов Т. М.',
               num: 10
+            },
+            {
+              les: 'Интернет вещей (проектная деятельность)',
+              cab: 117,
+              prof: 'Эрлеман П. И.',
+              num: 10
+            },
+            {
+              les: 'Инженер PRO (образ.пакет): инженерное 3d моделирование и прототипирование',
+              cab: 319,
+              prof: 'Рытов А. М.',
+              num: 11
             },
             {
               les: 'Киберэлектроника',
@@ -148,79 +303,61 @@ export default {
           day: [
             {
               les: 'Авиамоделирование',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Игоревич Антонов',
-              num: 0
+              num: 3
             },
             {
               les: 'Web-дизайн',
               cab: 435,
               prof: 'Александр Андреевич Сомов',
-              num: 0
-            },
-            {
-              les: 'b1',
-              cab: 111,
-              prof: 'Степан Иванов',
-              num: 1
-            },
-            {
-              les: 'c1',
-              cab: 111,
-              prof: 'Степан Иванов',
-              num: 2
-            },
-            {
-              les: 'd1',
-              cab: 111,
-              prof: 'Степан Иванов',
               num: 3
             },
             {
               les: 'e1',
-              cab: 111,
+              cab: 117,
               prof: 'Степан Иванов',
               num: 4
             },
             {
               les: 'f1',
-              cab: 111,
+              cab: 117,
               prof: 'Степан Иванов',
               num: 5
             },
             {
               les: 'g1',
-              cab: 111,
+              cab: 117,
               prof: 'Степан Иванов',
               num: 6
             },
             {
               les: 'h1',
-              cab: 111,
+              cab: 117,
               prof: 'Степан Иванов',
               num: 7
             },
             {
               les: 'i1',
-              cab: 111,
+              cab: 117,
               prof: 'Степан Иванов',
               num: 8
             },
             {
               les: 'j1',
-              cab: 111,
+              cab: 117,
               prof: 'Степан Иванов',
               num: 9
             },
             {
               les: 'k1',
-              cab: 111,
+              cab: 117,
               prof: 'Степан Иванов',
               num: 10
             },
             {
               les: 'l1',
-              cab: 111,
+              cab: 117,
               prof: 'Степан Иванов',
               num: 11
             }
@@ -229,74 +366,50 @@ export default {
         {
           day: [
             {
-              les: 'a',
-              cab: 111,
-              prof: 'Иван Антонов',
-              num: 0
-            },
-            {
-              les: 'b',
-              cab: 111,
-              prof: 'Иван Антонов',
-              num: 1
-            },
-            {
-              les: 'c',
-              cab: 111,
-              prof: 'Иван Антонов',
-              num: 2
-            },
-            {
-              les: 'd',
-              cab: 111,
-              prof: 'Иван Антонов',
-              num: 3
-            },
-            {
               les: 'e',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 4
             },
             {
               les: 'f',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 5
             },
             {
               les: 'g',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 6
             },
             {
               les: 'h',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 7
             },
             {
               les: 'i',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 8
             },
             {
               les: 'j',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 9
             },
             {
               les: 'k',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 10
             },
             {
               les: 'l',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 11
             }
@@ -305,74 +418,56 @@ export default {
         {
           day: [
             {
-              les: 'a',
-              cab: 111,
-              prof: 'Иван Антонов',
-              num: 0
-            },
-            {
-              les: 'b',
-              cab: 111,
-              prof: 'Иван Антонов',
-              num: 1
-            },
-            {
-              les: 'c',
-              cab: 111,
-              prof: 'Иван Антонов',
-              num: 2
-            },
-            {
               les: 'd',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 3
             },
             {
               les: 'e',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 4
             },
             {
               les: 'f',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 5
             },
             {
               les: 'g',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 6
             },
             {
               les: 'h',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 7
             },
             {
               les: 'i',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 8
             },
             {
               les: 'j',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 9
             },
             {
               les: 'k',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 10
             },
             {
               les: 'l',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 11
             }
@@ -381,74 +476,56 @@ export default {
         {
           day: [
             {
-              les: 'a',
-              cab: 111,
-              prof: 'Иван Антонов',
-              num: 0
-            },
-            {
-              les: 'b',
-              cab: 111,
-              prof: 'Иван Антонов',
-              num: 1
-            },
-            {
-              les: 'c',
-              cab: 111,
-              prof: 'Иван Антонов',
-              num: 2
-            },
-            {
               les: 'd',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 3
             },
             {
               les: 'e',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 4
             },
             {
               les: 'f',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 5
             },
             {
               les: 'g',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 6
             },
             {
               les: 'h',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 7
             },
             {
               les: 'i',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 8
             },
             {
               les: 'j',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 9
             },
             {
               les: 'k',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 10
             },
             {
               les: 'l',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 11
             }
@@ -457,74 +534,56 @@ export default {
         {
           day: [
             {
-              les: 'a',
-              cab: 111,
-              prof: 'Иван Антонов',
-              num: 0
-            },
-            {
-              les: 'b',
-              cab: 111,
-              prof: 'Иван Антонов',
-              num: 1
-            },
-            {
-              les: 'c',
-              cab: 111,
-              prof: 'Иван Антонов',
-              num: 2
-            },
-            {
               les: 'd',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 3
             },
             {
               les: 'e',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 4
             },
             {
               les: 'f',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 5
             },
             {
               les: 'g',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 6
             },
             {
               les: 'h',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 7
             },
             {
               les: 'i',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 8
             },
             {
               les: 'j',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 9
             },
             {
               les: 'k',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 10
             },
             {
               les: 'l',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 11
             }
@@ -533,80 +592,82 @@ export default {
         {
           day: [
             {
-              les: 'a',
-              cab: 111,
-              prof: 'Иван Антонов',
-              num: 0
-            },
-            {
-              les: 'b',
-              cab: 111,
-              prof: 'Иван Антонов',
-              num: 1
-            },
-            {
-              les: 'c',
-              cab: 111,
-              prof: 'Иван Антонов',
-              num: 2
-            },
-            {
               les: 'd',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 3
             },
             {
               les: 'e',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 4
             },
             {
               les: 'f',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 5
             },
             {
               les: 'g',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 6
             },
             {
               les: 'h',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 7
             },
             {
               les: 'i',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 8
             },
             {
               les: 'j',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 9
             },
             {
               les: 'k',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 10
             },
             {
               les: 'l',
-              cab: 111,
+              cab: 117,
               prof: 'Иван Антонов',
               num: 11
             }
           ]
         }
       ]
+    }
+  },
+  computed: {
+    id () {
+      if (this.weekListActive === false && this.dayGridActive === false) {
+        return 0} else {
+        return this.$route.query.id
+      }
+    },
+    week_day () {
+      if (this.weekListActive === false && this.dayGridActive === false) {
+        return this.cols[1].text} else {
+        return this.$route.query.week_day
+      }
+    },
+    day_time () {
+    if (this.dayGridActive === false) {
+        return 0} else {
+        return this.$route.query.day_time
+      }
     }
   },
   methods: {
@@ -646,5 +707,28 @@ export default {
 
     p {
         color: black;
+        margin-top: 15px;
+        margin-bottom: 15px;
+    }
+
+    .schedule_day {
+        color: black;
+    }
+
+    .schedule_time {
+        color: darkblue;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .schedule_more_info {
+        color: lightslategrey;
+    }
+
+    li {
+        list-style-type: none;
+    }
+    ul {
+        padding-left: 0;
     }
 </style>
